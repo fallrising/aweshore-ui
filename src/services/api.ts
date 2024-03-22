@@ -28,7 +28,7 @@ export const createNote = async (title: string, content: string) => {
     return response.json();
 };
 
-export const updateNote = async (id: string, title: string, content: string) => {
+export const updateNote = async (id: number, title: string, content: string) => {
     const response = await fetch(`${API_BASE_URL}/notes/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },

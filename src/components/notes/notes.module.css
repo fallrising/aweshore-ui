@@ -1,0 +1,38 @@
+.note {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.noteInput,
+.noteTextArea {
+    margin-bottom: 5px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+.noteTextArea {
+    height: 100px;
+}
+
+.noteMeta {
+    flex: 1;
+    font-size: 14px; /* Increased font size */
+    color: #666; /* Adjusted color for better contrast */
+}
+
+.noteButton {
+    margin-top: 5px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.noteButton:hover {
+    background-color: #eee;
+}
