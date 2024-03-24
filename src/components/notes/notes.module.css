@@ -1,38 +1,85 @@
-.note {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 10px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+.rwdTable {
+    display: table;
+    width: 100%;
+    border-collapse: collapse; /* Changed from 'separate' for a tighter look */
+    /* border-spacing: 5px; Removed to allow border collapse */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added a subtle shadow for depth */
+    background-color: #ffffff; /* Default background for the table */
 }
 
-.noteInput,
-.noteTextArea {
-    margin-bottom: 5px;
-    padding: 5px;
-    border: 1px solid #ddd;
-    border-radius: 3px;
+.rwdTr, .rwdTitle_group {
+    display: table-row;
 }
 
-.noteTextArea {
-    height: 100px;
+.rwdTh, .rwdTd {
+    display: table-cell;
+    vertical-align: top;
+    text-align: center;
+    padding: 10px; /* Increased padding for better spacing */
+    border: 1px solid #ddd; /* Added border for definition */
 }
 
-.noteMeta {
-    flex: 1;
-    font-size: 14px; /* Increased font size */
-    color: #666; /* Adjusted color for better contrast */
-}
-
-.noteButton {
-    margin-top: 5px;
+.rwdTd {
+    display: table-cell;
+    vertical-align: top;
+    text-align: center;
     padding: 5px 10px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
+    color: #000; /* This sets the text color to black */
 }
 
-.noteButton:hover {
-    background-color: #eee;
+/* Header styles */
+.rwdTh {
+    background-color: #005792; /* Darkened color for better contrast */
+    color: #ffffff;
+    font-weight: bold; /* Make header text bold */
+    font-size: 1.1rem; /* Slightly larger text in headers */
 }
+
+/* Row styles */
+.rwdTr:nth-of-type(odd) {
+    background-color: #f0f0f0; /* Light grey for every other row */
+}
+
+/* Slightly darker border under headers for separation */
+.rwdTh + .rwdTd {
+    border-top: 2px solid #ccc;
+}
+
+/* Hover styles for rows */
+.rwdTr:hover {
+    background-color: #e8f4f8; /* Highlight on hover for interactivity */
+}
+
+/* Adjust button styles */
+button {
+    padding: 6px 12px;
+    margin: 4px;
+    border: none;
+    border-radius: 4px;
+    background-color: #188EBE; /* Use the theme color for buttons */
+    color: #ffffff;
+    cursor: pointer; /* Indicate clickable buttons */
+}
+
+button:hover {
+    background-color: #1c9cd2; /* Lighter blue on hover for feedback */
+}
+
+/* Add styles for input and textarea */
+input, textarea {
+    border: 1px solid #ccc; /* Consistent border styling */
+    border-radius: 4px; /* Rounded corners */
+    padding: 6px; /* Spacing inside inputs */
+}
+
+/* Specific adjustments to input sizes could be made here, e.g. */
+input[type="text"] {
+    width: calc(100% - 12px); /* Full width minus padding */
+}
+
+textarea {
+    width: calc(100% - 12px); /* Full width minus padding */
+    height: 80px; /* Fixed height for textareas */
+}
+
+/* If you have a specific color scheme or branding, adjust the colors accordingly. */

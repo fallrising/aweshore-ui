@@ -68,57 +68,80 @@ export const NotesList = component$(() => {
 
     return (
         <div>
-            <Resource
-                value={notesResource}
-                onResolved={() => (
-                    <>
-                        {store.notes.map((note) => (
-                            <div key={note.id} class={styles.note}>
-                                <input
-                                    type="text"
-                                    value={note.id.toString()}
-                                    disabled
-                                />
-                                <input class={styles.noteInput}
-                                    type="text"
-                                    value={note.title}
-                                    onInput$={(e) => (note.title = (e.target as HTMLInputElement).value)}
-                                />
-                                <textarea class={styles.noteTextArea}
-                                    value={note.content}
-                                    onInput$={(e) => (note.content = (e.target as HTMLTextAreaElement).value)}
+            <div class={styles.rwdTable}>
+                <div class={styles.rwdTr}>
+                    <div class={styles.rwdTh}>ID</div>
+                    <div class={styles.rwdTh}>Title</div>
+                    <div class={styles.rwdTh}>Content</div>
+                    <div class={styles.rwdTh}>Created</div>
+                    <div class={styles.rwdTh}>Updated</div>
+                    <div class={styles.rwdTh}>Actions</div>
+                </div>
+
+                <Resource
+                    value={notesResource}
+                    onResolved={() => (
+                        <>
+                            {store.notes.map((note) => (
+                                <div key={note.id} class={styles.rwdTr}>
+                                    <div class={styles.rwdTd}>{note.id}</div>
+                                    {/* Update data-th attributes if needed */}
+                                    <div class={styles.rwdTd} data-th="Title">
+                                        <input
+                                            type="text"
+                                            value={note.title}
+                                            onInput$={(e) => (note.title = (e.target as HTMLInputElement).value)}
+                                        />
+                                    </div>
+                                    {/* Other cells similarly */}
+                                    <div class={styles.rwdTd} data-th="Content">
+                                    <textarea
+                                        value={note.content}
+                                        onInput$={(e) => (note.content = (e.target as HTMLTextAreaElement).value)}
+                                    ></textarea>
+                                    </div>
+                                    <div class={styles.rwdTd}>{formatDate(note.created)}</div>
+                                    <div class={styles.rwdTd}>{formatDate(note.updated)}</div>
+                                    <div class={styles.rwdTd}>
+                                        <button onClick$={() => updateNote(note)}>Save
+                                        </button>
+                                        <button
+                                            onClick$={() => deleteNote(note.id)}>Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                            {/* Row for adding a new note */}
+                            <div class={styles.rwdTr}>
+                                <div class={styles.rwdTd}>
+                                </div>
+                                <div class={styles.rwdTd}>
+                                    <input
+                                        type="text"
+                                        placeholder="Title"
+                                        value={store.newNote.title}
+                                        onInput$={(e) => (store.newNote.title = (e.target as HTMLInputElement).value)}
+                                    />
+                                </div>
+                                <div class={styles.rwdTd}>
+                                <textarea
+                                    placeholder="Content"
+                                    value={store.newNote.content}
+                                    onInput$={(e) => (store.newNote.content = (e.target as HTMLTextAreaElement).value)}
                                 ></textarea>
-                                <input class={styles.noteMeta}
-                                    type="text"
-                                    value={formatDate(note.created)}
-                                    disabled
-                                />
-                                <input class={styles.noteMeta}
-                                    type="text"
-                                    value={formatDate(note.updated)}
-                                    disabled
-                                />
-                                <button class={styles.noteButton} onClick$={() => updateNote(note)}>Save</button>
-                                <button class={styles.noteButton} onClick$={() => deleteNote(note.id)}>Delete</button>
+                                </div>
+                                <div class={styles.rwdTd}>
+                                </div>
+                                <div class={styles.rwdTd}>
+                                </div>
+                                <div class={styles.rwdTd}>
+                                    <button onClick$={addNote}>Add Note</button>
+                                </div>
                             </div>
-                        ))}
-                        <div class={styles.note}>
-                            <input class={styles.noteInput}
-                                type="text"
-                                placeholder="Title"
-                                value={store.newNote.title}
-                                onInput$={(e) => (store.newNote.title = (e.target as HTMLInputElement).value)}
-                            />
-                            <textarea class={styles.noteTextArea}
-                                placeholder="Content"
-                                value={store.newNote.content}
-                                onInput$={(e) => (store.newNote.content = (e.target as HTMLTextAreaElement).value)}
-                            ></textarea>
-                            <button class={styles.noteButton} onClick$={addNote}>Add Note</button>
-                        </div>
-                    </>
-                )}
-            />
+                        </>
+                    )}
+                />
+            </div>
         </div>
     );
 });
