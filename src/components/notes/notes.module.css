@@ -82,4 +82,15 @@ textarea {
     height: 80px; /* Fixed height for textareas */
 }
 
-/* If you have a specific color scheme or branding, adjust the colors accordingly. */
+/* Add or adjust styles as needed */
+.paginationControls {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.pageInput, .pageSizeInput {
+    width: 60px;
+}

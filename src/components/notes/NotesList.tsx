@@ -81,27 +81,30 @@ export const NotesList = component$(() => {
 
     return (
         <div>
-            <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '10px'}}>
-                <input
-                    type="number"
-                    value={store.currentPage}
-                    onInput$={(e) => (store.currentPage = parseInt((e.target as HTMLTextAreaElement).value))}
-                    placeholder="Page Number"
-                />
-                <input
-                    type="number"
-                    value={store.pageSize}
-                    onInput$={(e) => (store.pageSize = parseInt((e.target as HTMLTextAreaElement).value))}
-                    placeholder="Page Size"
-                />
-                <button onClick$={() => fetchNotes()}>Go</button>
+            <div>
+                <div class={styles.paginationControls}>
+                    <input
+                        type="number"
+                        class={styles.pageInput}
+                        value={store.currentPage}
+                        onInput$={(e) => (store.currentPage = parseInt((e.target as HTMLTextAreaElement).value))}
+                        placeholder="Page Number"
+                    />
+                    <input
+                        type="number"
+                        class={styles.pageSizeInput}
+                        value={store.pageSize}
+                        onInput$={(e) => (store.pageSize = parseInt((e.target as HTMLTextAreaElement).value))}
+                        placeholder="Page Size"
+                    />
+                    <span>Total Notes: {store.totalCount}</span>
+                    <button onClick$={() => store.currentPage = Math.max(1, store.currentPage - 1)}>Prev</button>
+                    <button
+                        onClick$={() => store.currentPage = Math.min(store.totalPages, store.currentPage + 1)}>Next
+                    </button>
+                </div>
+                {/* Note rendering and other component logic remains the same */}
             </div>
-            {/* Pagination controls */}
-            {Array.from({ length: store.totalPages }, (_, i) => (
-                <button key={i} onClick$={() => { store.currentPage = i + 1; fetchNotes(); }}>
-                    {i + 1}
-                </button>
-            ))}
             <div>Total Notes: {store.totalCount}</div>
             <div class={styles.rwdTable}>
                 <div class={styles.rwdTr}>
