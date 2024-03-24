@@ -19,22 +19,27 @@ export const NotesList = component$(() => {
         totalPages: 0,
         totalCount: 0,
         lastId: 0,
-        newNote: { title: '', content: '' } as Note,
+        newNote: {title: '', content: ''} as Note,
         loading: true,
     });
 
     const fetchNotes = $(async () => {
-        const { notes, totalPages, totalCount, lastId } = await api.getNotes(store.currentPage, store.pageSize);
+        const {notes, totalPages, totalCount, lastId} = await api.getNotes(store.currentPage, store.pageSize);
         store.notes = notes;
         store.totalPages = totalPages;
         store.totalCount = totalCount;
         store.lastId = lastId;
     });
 
-    const notesResource = useResource$<Note[]>(async () => {
-        const { notes } = await api.getNotes(store.currentPage, store.pageSize);
+    const notesResource = useResource$<Note[]>(async ({track}) => {
+        track(() => store.currentPage);
+        track(() => store.pageSize);
+        track(() => store.totalCount);
+
+        const {notes, totalCount} = await api.getNotes(store.currentPage, store.pageSize);
         store.notes = notes;
         store.loading = false;
+        store.totalCount = totalCount;
         return notes;
     });
 
@@ -85,6 +90,7 @@ export const NotesList = component$(() => {
         <div>
             <div>
                 <div class={styles.paginationControls}>
+                    <Resource value={notesResource} onResolved={() => (<div>Total Notes: {store.totalCount}</div>)}/>
                     Page Number:
                     <input
                         type="number"
@@ -101,19 +107,29 @@ export const NotesList = component$(() => {
                     />
                     <button onClick$={() => fetchNotes()}>Go</button>
                 </div>
-                {/* Pagination controls */}
-                {Array.from({length: store.totalPages}, (_, i) => (
-                    <button key={i} onClick$={() => {
-                        store.currentPage = i + 1;
-                        fetchNotes().then(r => r);
-                    }}>
-                        {i + 1}
-                    </button>
-                ))}
-                <div>Total Notes: {store.totalCount}</div>
+
+                {/* Last Page Button - Only show if not on the first page */}
+                {(
+                    <button onClick$={() => {
+                        if (store.currentPage > 1) {
+                            store.currentPage = store.currentPage - 1;
+                        }
+                        fetchNotes();
+                    }}>Last</button>
+                )}
+
+                {/* Conditionally render the "Next" button if the current page is not the last one */}
+                {(
+                    <button onClick$={() => {
+                        if (store.currentPage < store.totalPages) {
+                            store.currentPage = store.currentPage + 1;
+                        }
+                        fetchNotes();
+                    }}>Next</button>
+                )}
             </div>
             <div class={styles.rwdTable}>
-            <div class={styles.rwdTr}>
+                <div class={styles.rwdTr}>
                     <div class={styles.rwdTh}>ID</div>
                     <div class={styles.rwdTh}>Title</div>
                     <div class={styles.rwdTh}>Content</div>

@@ -94,3 +94,15 @@ textarea {
 .pageInput, .pageSizeInput {
     width: 60px;
 }
+
+.currentPageButton {
+    background-color: #004970; /* A darker shade to stand out */
+    color: #ffffff;
+    pointer-events: none; /* Disables the button */
+}
+
+.activePageButton {
+    background-color: #003A70; /* A darker shade for the active button */
+    color: white;
+    pointer-events: none; /* Disable clicking on the active button */
+}
