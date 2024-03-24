@@ -18,23 +18,23 @@ export const NotesList = component$(() => {
         pageSize: 10,
         totalPages: 0,
         totalCount: 0,
+        lastId: 0,
         newNote: { title: '', content: '' } as Note,
         loading: true,
     });
 
     const fetchNotes = $(async () => {
-        const { notes, totalPages, totalCount } = await api.getNotes(store.currentPage, store.pageSize);
+        const { notes, totalPages, totalCount, lastId } = await api.getNotes(store.currentPage, store.pageSize);
         store.notes = notes;
         store.totalPages = totalPages;
         store.totalCount = totalCount;
+        store.lastId = lastId;
     });
 
     const notesResource = useResource$<Note[]>(async () => {
-        const { notes, totalPages, totalCount } = await api.getNotes(store.currentPage, store.pageSize);
+        const { notes } = await api.getNotes(store.currentPage, store.pageSize);
         store.notes = notes;
         store.loading = false;
-        store.totalPages = totalPages;
-        store.totalCount = totalCount;
         return notes;
     });
 
@@ -43,6 +43,7 @@ export const NotesList = component$(() => {
             await api.updateNote(note.id, note.title, note.content);
             // Optionally refresh the list or show a success message
         } catch (error) {
+            alert('Update note failed')
             console.error('Failed to update note:', error);
         }
     });
@@ -52,6 +53,7 @@ export const NotesList = component$(() => {
             await api.deleteNote(id);
             store.notes = store.notes.filter((note) => note.id !== id);
         } catch (error) {
+            alert('Delete note failed')
             console.error('Failed to delete note:', error);
         }
     });
@@ -62,13 +64,13 @@ export const NotesList = component$(() => {
             return;
         }
         const newNote = await api.createNote(store.newNote.title, store.newNote.content);
-        // create empty note
-        const insertedNote = { id: 0, title: store.newNote.title, content: store.newNote.content, created: '', updated: '' };
         // Ensure the new note has all the necessary properties, including the ID from the database.
         if (newNote && newNote.id > 0) {
-            store.notes = [...store.notes, insertedNote];
+            store.notes = [...store.notes, newNote];
         } else {
-            throw new Error('New note was not returned by the API');
+            // show a alert to user, create note failed
+            alert('Create note failed');
+            console.error('Failed to create note:', newNote);
         }
         // Reset the new note form fields.
         store.newNote.title = '';
@@ -83,31 +85,35 @@ export const NotesList = component$(() => {
         <div>
             <div>
                 <div class={styles.paginationControls}>
+                    Page Number:
                     <input
                         type="number"
-                        class={styles.pageInput}
                         value={store.currentPage}
                         onInput$={(e) => (store.currentPage = parseInt((e.target as HTMLTextAreaElement).value))}
                         placeholder="Page Number"
                     />
+                    Page Size:
                     <input
                         type="number"
-                        class={styles.pageSizeInput}
                         value={store.pageSize}
                         onInput$={(e) => (store.pageSize = parseInt((e.target as HTMLTextAreaElement).value))}
                         placeholder="Page Size"
                     />
-                    <span>Total Notes: {store.totalCount}</span>
-                    <button onClick$={() => store.currentPage = Math.max(1, store.currentPage - 1)}>Prev</button>
-                    <button
-                        onClick$={() => store.currentPage = Math.min(store.totalPages, store.currentPage + 1)}>Next
-                    </button>
+                    <button onClick$={() => fetchNotes()}>Go</button>
                 </div>
-                {/* Note rendering and other component logic remains the same */}
+                {/* Pagination controls */}
+                {Array.from({length: store.totalPages}, (_, i) => (
+                    <button key={i} onClick$={() => {
+                        store.currentPage = i + 1;
+                        fetchNotes().then(r => r);
+                    }}>
+                        {i + 1}
+                    </button>
+                ))}
+                <div>Total Notes: {store.totalCount}</div>
             </div>
-            <div>Total Notes: {store.totalCount}</div>
             <div class={styles.rwdTable}>
-                <div class={styles.rwdTr}>
+            <div class={styles.rwdTr}>
                     <div class={styles.rwdTh}>ID</div>
                     <div class={styles.rwdTh}>Title</div>
                     <div class={styles.rwdTh}>Content</div>
