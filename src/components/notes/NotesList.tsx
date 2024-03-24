@@ -14,14 +14,27 @@ export interface Note {
 export const NotesList = component$(() => {
     const store = useStore({
         notes: [] as Note[],
+        currentPage: 1,
+        pageSize: 10,
+        totalPages: 0,
+        totalCount: 0,
         newNote: { title: '', content: '' } as Note,
         loading: true,
     });
 
+    const fetchNotes = $(async () => {
+        const { notes, totalPages, totalCount } = await api.getNotes(store.currentPage, store.pageSize);
+        store.notes = notes;
+        store.totalPages = totalPages;
+        store.totalCount = totalCount;
+    });
+
     const notesResource = useResource$<Note[]>(async () => {
-        const notes = await api.getNotes();
+        const { notes, totalPages, totalCount } = await api.getNotes(store.currentPage, store.pageSize);
         store.notes = notes;
         store.loading = false;
+        store.totalPages = totalPages;
+        store.totalCount = totalCount;
         return notes;
     });
 
@@ -68,6 +81,28 @@ export const NotesList = component$(() => {
 
     return (
         <div>
+            <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '10px'}}>
+                <input
+                    type="number"
+                    value={store.currentPage}
+                    onInput$={(e) => (store.currentPage = parseInt((e.target as HTMLTextAreaElement).value))}
+                    placeholder="Page Number"
+                />
+                <input
+                    type="number"
+                    value={store.pageSize}
+                    onInput$={(e) => (store.pageSize = parseInt((e.target as HTMLTextAreaElement).value))}
+                    placeholder="Page Size"
+                />
+                <button onClick$={() => fetchNotes()}>Go</button>
+            </div>
+            {/* Pagination controls */}
+            {Array.from({ length: store.totalPages }, (_, i) => (
+                <button key={i} onClick$={() => { store.currentPage = i + 1; fetchNotes(); }}>
+                    {i + 1}
+                </button>
+            ))}
+            <div>Total Notes: {store.totalCount}</div>
             <div class={styles.rwdTable}>
                 <div class={styles.rwdTr}>
                     <div class={styles.rwdTh}>ID</div>

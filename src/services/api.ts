@@ -1,7 +1,7 @@
 const API_BASE_URL = 'http://localhost:8080'; // Update this to your Go backend URL
 
-export const getNotes = async () => {
-    const response = await fetch(`${API_BASE_URL}/notes`);
+export const getNotes = async (page = 1, pageSize = 10) => {
+    const response = await fetch(`${API_BASE_URL}/notes?page=${page}&pageSize=${pageSize}`);
     if (!response.ok) {
         throw new Error('Failed to fetch notes');
     }
