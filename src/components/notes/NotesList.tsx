@@ -36,10 +36,11 @@ export const NotesList = component$(() => {
         track(() => store.pageSize);
         track(() => store.totalCount);
 
-        const {notes, totalCount} = await api.getNotes(store.currentPage, store.pageSize);
+        const {notes, totalCount, totalPages} = await api.getNotes(store.currentPage, store.pageSize);
         store.notes = notes;
         store.loading = false;
         store.totalCount = totalCount;
+        store.totalPages = totalPages;
         return notes;
     });
 
@@ -90,7 +91,12 @@ export const NotesList = component$(() => {
         <div>
             <div>
                 <div class={styles.paginationControls}>
-                    <Resource value={notesResource} onResolved={() => (<div>Total Notes: {store.totalCount}</div>)}/>
+                    <Resource value={notesResource} onResolved={() => (
+                        <div>
+                            <div>Total Notes: {store.totalCount}</div>
+                            <div>Total Pages: {store.totalPages}</div>
+                        </div>
+                    )}/>
                     Page Number:
                     <input
                         type="number"
