@@ -83,132 +83,189 @@ export const NotesList = component$(() => {
         store.newNote.content = '';
     });
 
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleString();
+    const formatDate = (dateString: string): string => {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed, so +1 is needed
+        const day = date.getDate().toString().padStart(2, '0');
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const seconds = date.getSeconds().toString().padStart(2, '0');
+
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     };
 
     return (
         <div>
-            <div>
-                <div class={styles.paginationControls}>
+            <div class="table-container">
+                <div class="level-left">
                     <Resource value={notesResource} onResolved={() => (
-                        <div>
-                            <div>Total Notes: {store.totalCount}</div>
-                            <div>Total Pages: {store.totalPages}</div>
+                        <div class="level-item">
+                            <div class="tags has-addons">
+                                <span class="tag is-dark">Total Notes</span>
+                                <span class="tag is-info">{store.totalCount}</span>
+                            </div>
                         </div>
                     )}/>
-                    {(
-                        <button onClick$={() => {
-                            if (store.currentPage > store.totalPages) {
-                                store.currentPage = store.totalPages;
-                            }
-                            if (store.currentPage > 1) {
-                                store.currentPage = store.currentPage - 1;
-                            }
-                            fetchNotes();
-                        }}>Last</button>
-                    )}
-                    Page Number:
-                    <input
-                        type="number"
-                        value={store.currentPage}
-                        onInput$={(e) => (store.currentPage = parseInt((e.target as HTMLTextAreaElement).value))}
-                        placeholder="Page Number"
-                    />
-                    {(
-                        <button onClick$={() => {
-                            if (store.currentPage > store.totalPages) {
-                                store.currentPage = store.totalPages;
-                            }
-                            if (store.currentPage < store.totalPages) {
-                                store.currentPage = store.currentPage + 1;
-                            }
-                            fetchNotes();
-                        }}>Next</button>
-                    )}
-                    Page Size:
-                    <input
-                        type="number"
-                        value={store.pageSize}
-                        onInput$={(e) => (store.pageSize = parseInt((e.target as HTMLTextAreaElement).value))}
-                        placeholder="Page Size"
-                    />
-                    <button onClick$={() => fetchNotes()}>Go</button>
-                </div>
-            </div>
-            <div class={styles.rwdTable}>
-                <div class={styles.rwdTr}>
-                    <div class={styles.rwdTh}>ID</div>
-                    <div class={styles.rwdTh}>Title</div>
-                    <div class={styles.rwdTh}>Content</div>
-                    <div class={styles.rwdTh}>Created</div>
-                    <div class={styles.rwdTh}>Updated</div>
-                    <div class={styles.rwdTh}>Actions</div>
-                </div>
-
-                <Resource
-                    value={notesResource}
-                    onResolved={() => (
-                        <>
-                            {store.notes.map((note) => (
-                                <div key={note.id} class={styles.rwdTr}>
-                                    <div class={styles.rwdTd}>{note.id}</div>
-                                    {/* Update data-th attributes if needed */}
-                                    <div class={styles.rwdTd} data-th="Title">
-                                        <input
-                                            type="text"
-                                            value={note.title}
-                                            onInput$={(e) => (note.title = (e.target as HTMLInputElement).value)}
-                                        />
-                                    </div>
-                                    {/* Other cells similarly */}
-                                    <div class={styles.rwdTd} data-th="Content">
-                                    <textarea
-                                        value={note.content}
-                                        onInput$={(e) => (note.content = (e.target as HTMLTextAreaElement).value)}
-                                    ></textarea>
-                                    </div>
-                                    <div class={styles.rwdTd}>{formatDate(note.created)}</div>
-                                    <div class={styles.rwdTd}>{formatDate(note.updated)}</div>
-                                    <div class={styles.rwdTd}>
-                                        <button onClick$={() => updateNote(note)}>Save
-                                        </button>
-                                        <button
-                                            onClick$={() => deleteNote(note.id)}>Delete
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                            {/* Row for adding a new note */}
-                            <div class={styles.rwdTr}>
-                                <div class={styles.rwdTd}>
-                                </div>
-                                <div class={styles.rwdTd}>
-                                    <input
-                                        type="text"
-                                        placeholder="Title"
-                                        value={store.newNote.title}
-                                        onInput$={(e) => (store.newNote.title = (e.target as HTMLInputElement).value)}
-                                    />
-                                </div>
-                                <div class={styles.rwdTd}>
-                                <textarea
-                                    placeholder="Content"
-                                    value={store.newNote.content}
-                                    onInput$={(e) => (store.newNote.content = (e.target as HTMLTextAreaElement).value)}
-                                ></textarea>
-                                </div>
-                                <div class={styles.rwdTd}>
-                                </div>
-                                <div class={styles.rwdTd}>
-                                </div>
-                                <div class={styles.rwdTd}>
-                                    <button onClick$={addNote}>Add Note</button>
-                                </div>
+                    <Resource value={notesResource} onResolved={() => (
+                        <div class="level-item">
+                            <div class="tags has-addons">
+                                <span class="tag is-dark">Total Pages</span>
+                                <span class="tag is-primary">{store.totalPages}</span>
                             </div>
-                        </>
-                    )}
-                />
+                        </div>
+                    )}/>
+                </div>
+                <div class="level-right">
+                    <div class="level-item">
+                        {(
+                            <button class="button is-link is-light" onClick$={() => {
+                                if (store.currentPage > store.totalPages) {
+                                    store.currentPage = store.totalPages;
+                                }
+                                if (store.currentPage > 1) {
+                                    store.currentPage = store.currentPage - 1;
+                                }
+                                fetchNotes();
+                            }}>Last</button>
+                        )}
+                    </div>
+
+                    <div class="level-item">
+                        <input
+                            class="input"
+                            type="number"
+                            value={store.currentPage}
+                            onInput$={(e) => (store.currentPage = parseInt((e.target as HTMLInputElement).value))}
+                            placeholder="Page Number"
+                        />
+                    </div>
+
+                    <div class="level-item">
+                        <input
+                            class="input"
+                            type="number"
+                            value={store.pageSize}
+                            onInput$={(e) => (store.pageSize = parseInt((e.target as HTMLInputElement).value))}
+                            placeholder="Page Size"
+                        />
+                    </div>
+
+                    <div class="level-item">
+                        <button class="button is-link" onClick$={() => fetchNotes()}>Go</button>
+                    </div>
+
+                    <div class="level-item">
+                        {(
+                            <button class="button is-link is-light" onClick$={() => {
+                                if (store.currentPage > store.totalPages) {
+                                    store.currentPage = store.totalPages;
+                                }
+                                if (store.currentPage < store.totalPages) {
+                                    store.currentPage = store.currentPage + 1;
+                                }
+                                fetchNotes();
+                            }}>Next</button>
+                        )}
+                    </div>
+                </div>
+                <table class="table is-fullwidth is-hoverable is-striped">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Content</th>
+                        <th>Created</th>
+                        <th>Updated</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <Resource value={notesResource} onResolved={() => (
+                        store.notes.map((note) => (
+                            <tr key={note.id}>
+                                <td>{note.id}</td>
+                                <td>
+                                    <input
+                                        class="input"
+                                        type="text"
+                                        value={note.title}
+                                        onInput$={(e) => (note.title = (e.target as HTMLInputElement).value)}
+                                    />
+                                </td>
+                                <td>
+                  <textarea
+                      class="textarea"
+                      value={note.content}
+                      onInput$={(e) => (note.content = (e.target as HTMLTextAreaElement).value)}
+                  ></textarea>
+                                </td>
+                                <td>{formatDate(note.created)}</td>
+                                <td>{formatDate(note.updated)}</td>
+                                <td>
+                                    <button class="button is-small is-success"
+                                            onClick$={() => updateNote(note)}>Save
+                                    </button>
+                                    <button class="button is-small is-danger"
+                                            onClick$={() => deleteNote(note.id)}>Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
+                    )}/>
+                    {/* Add new note row */}
+                    <tr>
+                        <td></td>
+                        {/* Empty cell for the ID */}
+                        <td>
+                            <input
+                                class="input"
+                                type="text"
+                                placeholder="Title"
+                                value={store.newNote.title}
+                                onInput$={(e) => (store.newNote.title = (e.target as HTMLInputElement).value)}
+                            />
+                        </td>
+                        <td> {/* Merge cells for content textarea */}
+                            <textarea
+                                class="textarea"
+                                placeholder="Content"
+                                value={store.newNote.content}
+                                onInput$={(e) => (store.newNote.content = (e.target as HTMLTextAreaElement).value)}
+                            ></textarea>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        {/* Empty cells for Created and Updated dates */}
+                        <td>
+                            <button class="button is-primary" onClick$={addNote}>Add Note</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="field is-grouped">
+                <div class="control">
+                    <input
+                        class="input"
+                        type="text"
+                        placeholder="Title"
+                        value={store.newNote.title}
+                        onInput$={(e) => (store.newNote.title = (e.target as HTMLInputElement).value)}
+                    />
+                </div>
+                <div class="control">
+        <textarea
+            class="textarea"
+            placeholder="Content"
+            value={store.newNote.content}
+            onInput$={(e) => (store.newNote.content = (e.target as HTMLTextAreaElement).value)}
+        ></textarea>
+                </div>
+                <div class="control">
+                    <button class="button is-primary" onClick$={addNote}>Add Note</button>
+                </div>
             </div>
         </div>
     );
