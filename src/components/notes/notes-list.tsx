@@ -1,4 +1,4 @@
-// src/components/NotesList.tsx
+// src/components/notes-list.tsx
 import {component$, useStore, useResource$, Resource, $} from '@builder.io/qwik';
 import * as api from '../../services/api';
 import styles from "~/components/notes/notes.module.css";
@@ -97,6 +97,17 @@ export const NotesList = component$(() => {
                             <div>Total Pages: {store.totalPages}</div>
                         </div>
                     )}/>
+                    {(
+                        <button onClick$={() => {
+                            if (store.currentPage > store.totalPages) {
+                                store.currentPage = store.totalPages;
+                            }
+                            if (store.currentPage > 1) {
+                                store.currentPage = store.currentPage - 1;
+                            }
+                            fetchNotes();
+                        }}>Last</button>
+                    )}
                     Page Number:
                     <input
                         type="number"
@@ -104,6 +115,17 @@ export const NotesList = component$(() => {
                         onInput$={(e) => (store.currentPage = parseInt((e.target as HTMLTextAreaElement).value))}
                         placeholder="Page Number"
                     />
+                    {(
+                        <button onClick$={() => {
+                            if (store.currentPage > store.totalPages) {
+                                store.currentPage = store.totalPages;
+                            }
+                            if (store.currentPage < store.totalPages) {
+                                store.currentPage = store.currentPage + 1;
+                            }
+                            fetchNotes();
+                        }}>Next</button>
+                    )}
                     Page Size:
                     <input
                         type="number"
@@ -113,26 +135,6 @@ export const NotesList = component$(() => {
                     />
                     <button onClick$={() => fetchNotes()}>Go</button>
                 </div>
-
-                {/* Last Page Button - Only show if not on the first page */}
-                {(
-                    <button onClick$={() => {
-                        if (store.currentPage > 1) {
-                            store.currentPage = store.currentPage - 1;
-                        }
-                        fetchNotes();
-                    }}>Last</button>
-                )}
-
-                {/* Conditionally render the "Next" button if the current page is not the last one */}
-                {(
-                    <button onClick$={() => {
-                        if (store.currentPage < store.totalPages) {
-                            store.currentPage = store.currentPage + 1;
-                        }
-                        fetchNotes();
-                    }}>Next</button>
-                )}
             </div>
             <div class={styles.rwdTable}>
                 <div class={styles.rwdTr}>
