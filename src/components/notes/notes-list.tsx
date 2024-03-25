@@ -8,8 +8,10 @@ export interface Note {
     id: number;
     title: string;
     content: string;
-    created: string;
-    updated: string;
+    noteTypeId: number; // Corresponds to NoteTypeID in the Go struct
+    created: string; // Consider if you need to adjust this to Date for consistency with your BE or keep as string for direct JSON mapping
+    updated: string; // Same consideration as for `created`
+    status: string; // Corresponds to Status in the Go struct
 }
 
 export const NotesList = component$(() => {
