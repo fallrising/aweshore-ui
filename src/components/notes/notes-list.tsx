@@ -1,6 +1,8 @@
 // src/components/notes-list.tsx
 import {component$, useStore, useResource$, Resource, $} from '@builder.io/qwik';
 import * as api from '../../services/api';
+import 'bulma/css/bulma.min.css';
+import {toast} from 'bulma-toast';
 
 export interface Note {
     id: number;
@@ -32,7 +34,7 @@ export const NotesList = component$(() => {
             store.lastId = lastId;
         } catch (error) {
             console.error('Failed to fetch notes:', error);
-            alert('Failed to load notes');
+            showToast('Failed to load notes');
         } finally {
             store.loading = false; // Stop loading regardless of success or failure
         }
@@ -56,7 +58,7 @@ export const NotesList = component$(() => {
             await api.updateNote(note.id, note.title, note.content);
             // Optionally refresh the list or show a success message
         } catch (error) {
-            alert('Update note failed')
+            showToast('Update note failed')
             console.error('Failed to update note:', error);
         }
     });
@@ -66,7 +68,7 @@ export const NotesList = component$(() => {
             await api.deleteNote(id);
             store.notes = store.notes.filter((note) => note.id !== id);
         } catch (error) {
-            alert('Delete note failed')
+            showToast('Delete note failed')
             console.error('Failed to delete note:', error);
         }
     });
@@ -81,8 +83,8 @@ export const NotesList = component$(() => {
         if (newNote && newNote.id > 0) {
             store.notes = [...store.notes, newNote];
         } else {
-            // show a alert to user, create note failed
-            alert('Create note failed');
+            // show a showToast to user, create note failed
+            showToast('Create note failed');
             console.error('Failed to create note:', newNote);
         }
         // Reset the new note form fields.
@@ -102,6 +104,17 @@ export const NotesList = component$(() => {
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     };
 
+    const showToast = $((msg: string) => {
+        toast({
+            message: msg,
+            type: 'is-danger',
+            dismissible: true,
+            pauseOnHover: true,
+            duration: 5500,
+            position: 'top-center',
+        });
+    });
+    
     return (
         <div>
             <div class="table-container">

@@ -42,6 +42,7 @@
     "vite-tsconfig-paths": "^4.2.1"
   },
   "dependencies": {
-    "bulma": "^1.0.0"
+    "bulma": "^1.0.0",
+    "bulma-toast": "^2.4.4"
   }
 }
