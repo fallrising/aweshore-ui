@@ -1,7 +1,6 @@
 // src/components/notes-list.tsx
 import {component$, useStore, useResource$, Resource, $} from '@builder.io/qwik';
 import * as api from '../../services/api';
-import styles from "~/components/notes/notes.module.css";
 
 export interface Note {
     id: number;
@@ -20,15 +19,23 @@ export const NotesList = component$(() => {
         totalCount: 0,
         lastId: 0,
         newNote: {title: '', content: ''} as Note,
-        loading: true,
+        loading: false,
     });
 
     const fetchNotes = $(async () => {
-        const {notes, totalPages, totalCount, lastId} = await api.getNotes(store.currentPage, store.pageSize);
-        store.notes = notes;
-        store.totalPages = totalPages;
-        store.totalCount = totalCount;
-        store.lastId = lastId;
+        store.loading = true; // Start loading
+        try{
+            const {notes, totalPages, totalCount, lastId} = await api.getNotes(store.currentPage, store.pageSize);
+            store.notes = notes;
+            store.totalPages = totalPages;
+            store.totalCount = totalCount;
+            store.lastId = lastId;
+        } catch (error) {
+            console.error('Failed to fetch notes:', error);
+            alert('Failed to load notes');
+        } finally {
+            store.loading = false; // Stop loading regardless of success or failure
+        }
     });
 
     const notesResource = useResource$<Note[]>(async ({track}) => {
@@ -103,7 +110,7 @@ export const NotesList = component$(() => {
                         <div class="level-item">
                             <div class="tags has-addons">
                                 <span class="tag is-dark">Total Notes</span>
-                                <span class="tag is-info">{store.totalCount}</span>
+                                <span class="tag is-info">{store.totalCount.toLocaleString()}</span>
                             </div>
                         </div>
                     )}/>
@@ -111,7 +118,7 @@ export const NotesList = component$(() => {
                         <div class="level-item">
                             <div class="tags has-addons">
                                 <span class="tag is-dark">Total Pages</span>
-                                <span class="tag is-primary">{store.totalPages}</span>
+                                <span class="tag is-primary">{store.totalPages.toLocaleString()}</span>
                             </div>
                         </div>
                     )}/>
@@ -119,7 +126,7 @@ export const NotesList = component$(() => {
                 <div class="level-right">
                     <div class="level-item">
                         {(
-                            <button class="button is-link is-light" onClick$={() => {
+                            <button class="button is-link is-light" disabled={store.loading} onClick$={() => {
                                 if (store.currentPage > store.totalPages) {
                                     store.currentPage = store.totalPages;
                                 }
@@ -152,12 +159,12 @@ export const NotesList = component$(() => {
                     </div>
 
                     <div class="level-item">
-                        <button class="button is-link" onClick$={() => fetchNotes()}>Go</button>
+                        <button class="button is-link" disabled={store.loading} onClick$={() => fetchNotes()}>Go</button>
                     </div>
 
                     <div class="level-item">
                         {(
-                            <button class="button is-link is-light" onClick$={() => {
+                            <button class="button is-link is-light" disabled={store.loading} onClick$={() => {
                                 if (store.currentPage > store.totalPages) {
                                     store.currentPage = store.totalPages;
                                 }
@@ -203,10 +210,10 @@ export const NotesList = component$(() => {
                                 <td>{formatDate(note.created)}</td>
                                 <td>{formatDate(note.updated)}</td>
                                 <td>
-                                    <button class="button is-small is-success"
+                                    <button class="button is-small is-success" disabled={store.loading}
                                             onClick$={() => updateNote(note)}>Save
                                     </button>
-                                    <button class="button is-small is-danger"
+                                    <button class="button is-small is-danger" disabled={store.loading}
                                             onClick$={() => deleteNote(note.id)}>Delete
                                     </button>
                                 </td>
@@ -238,34 +245,11 @@ export const NotesList = component$(() => {
                         <td></td>
                         {/* Empty cells for Created and Updated dates */}
                         <td>
-                            <button class="button is-primary" onClick$={addNote}>Add Note</button>
+                            <button class="button is-primary" disabled={store.loading} onClick$={addNote}>Add Note</button>
                         </td>
                     </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <div class="field is-grouped">
-                <div class="control">
-                    <input
-                        class="input"
-                        type="text"
-                        placeholder="Title"
-                        value={store.newNote.title}
-                        onInput$={(e) => (store.newNote.title = (e.target as HTMLInputElement).value)}
-                    />
-                </div>
-                <div class="control">
-        <textarea
-            class="textarea"
-            placeholder="Content"
-            value={store.newNote.content}
-            onInput$={(e) => (store.newNote.content = (e.target as HTMLTextAreaElement).value)}
-        ></textarea>
-                </div>
-                <div class="control">
-                    <button class="button is-primary" onClick$={addNote}>Add Note</button>
-                </div>
             </div>
         </div>
     );
